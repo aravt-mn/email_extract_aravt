@@ -3,6 +3,7 @@ import sys
 import extract_emails
 import re
 from tqdm import tqdm
+import signal
 
 def convertTuple(tup): 
     str =  ';'.join(tup) 
@@ -25,7 +26,8 @@ if __name__ == '__main__':
         query = """
             select id, project_id_original 
             from grant_crawled_new_important1 
-            where award_amount is null;
+            where award_amount is null
+                and project_id_original is not null;
             """
         cursor.execute(query)
         result =cursor.fetchall()
@@ -39,7 +41,9 @@ if __name__ == '__main__':
                 url = 'http://' + url
                 if row[1] != None:
                     try:
-                        em = extract_emails.ExtractEmails(url, depth=20, print_log=True, ssl_verify=True, user_agent=None, request_delay=0.0)
+                        em = extract_emails.ExtractEmails(url, depth=10, print_log=True, ssl_verify=True, user_agent=None, request_delay=0.0)
+                    except KeyboardInterrupt:
+                        raise
                     except:
                         em = None
                     if em:
