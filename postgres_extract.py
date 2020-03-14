@@ -3,6 +3,7 @@ import sys
 import extract_emails
 import re
 from tqdm import tqdm
+# from multiprocessing import Pool
 
 def convertTuple(tup): 
     str =  ';'.join(tup) 
@@ -12,9 +13,9 @@ if __name__ == '__main__':
     try:
         conn = connect (
             dbname = "grant",
-            user = "khangai",
+            user = "aravt",
             host = "localhost",
-            password = "postgres"
+            password = "Pass123"
         )
         cursor = conn.cursor()
         cursor1 = conn.cursor()

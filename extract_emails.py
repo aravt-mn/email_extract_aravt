@@ -3,7 +3,8 @@
 import pickle
 import os
 import time
-
+import eventlet
+eventlet.monkey_patch()
 import re
 import requests
 from lxml import html
@@ -33,7 +34,14 @@ class ExtractEmails:
 
     def extract_emails(self, url):
         try:
-            r = requests.get(url, headers=self.headers, verify=self.verify)
+            with eventlet.Timeout(23):
+                r = requests.get(url, headers=self.headers, verify=self.verify, timeout = 20)
+                # print(r.history)
+                # print(r.status_code)
+                if r.history:
+                    if r.history[0].status_code == 301:
+                        # print('case 1', r.url)
+                        self.url = r.url
         except requests.ConnectionError as exc:
             # print(exc)
             # if type(exc.message) != requests.packages.urllib3.exceptions.MaxRetryError:
@@ -57,11 +65,18 @@ class ExtractEmails:
         if self.print_log:
             self.print_logs()
         for new_url in self.for_scan[:self.depth]:
+            # print('self.url: ', self.url)
+            # print('new_url: ', new_url)
+            # print('-------------------------------------')
             if new_url not in self.scanned:
                 time.sleep(self.delay)
                 self.extract_emails(new_url)
 
     def print_logs(self):
+        # print('self.url: ', self.url)
+        # print('for_scan: ', self.for_scan)
+        # print('------------')
+
         print('URLs: {}, emails: {}'
               .format(len(self.scanned), len(self.emails)))
 
@@ -81,7 +96,12 @@ class ExtractEmails:
             tree = None
         if tree is not None:
             all_links = tree.findall('.//a')
+            # print(all_links)
+            # print('-------1-----')
             for link in all_links:
+                # print('self.url: ', self.url)
+                # print('link: ', link)
+                # print('------------')
                 try:
                     link_href = link.attrib['href']
                     check_href_url = re.sub(r'https?://', '', link_href)
@@ -96,6 +116,15 @@ class ExtractEmails:
 
 
 if __name__ == '__main__':
-    em = ExtractEmails('http://www.ThreeVillagePodiatry.com', print_log=True, user_agent='Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0',
+    em = ExtractEmails('http://www.choicehotels.com', print_log=True, user_agent='Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0',
                        depth=10)
     print(em.emails)
+
+# www.candlewoodsuites.com
+
+# www.laresidencedining.com udaad bga
+# www.atlanticcitycruises.com email haihgui bga
+
+# www.loftmarietta.com
+
+# www.choicehotels.com ene code -d ajillaj bga atlaa postgres deer ajillahgui bgaa
