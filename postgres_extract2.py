@@ -23,19 +23,13 @@ if __name__ == '__main__':
         cursor = None
         print ("psycopg2 error:", err)
     if cursor != None:
-        # query = """
-        #     select id, project_id_original 
-        #     from grant_crawled_new_important1 
-        #     where award_amount is null
-        #         and project_id_original is not null;
-        #     """
         query = """
 select 
 	id, project_id_original 
 from grant_crawled_new_important1
 where 
 	award_amount  is null
-	and id between 87730 and 100037
+	and id between 112817 and 123649
 ;
             """
         cursor.execute(query)

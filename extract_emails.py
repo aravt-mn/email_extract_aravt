@@ -34,12 +34,14 @@ class ExtractEmails:
 
     def extract_emails(self, url):
         try:
-            with eventlet.Timeout(23):
-                r = requests.get(url, headers=self.headers, verify=self.verify, timeout = 20)
-                # print(r.history)
-                # print(r.status_code)
+            with eventlet.Timeout(33):
+                r = requests.get(url, headers=self.headers, verify=self.verify, timeout = 30)
                 if r.history:
                     if r.history[0].status_code == 301:
+                        print('s301 detected')
+                        self.url = r.url
+                    if r.history[0].status_code == 302:
+                        print('s302 detected')
                         # print('case 1', r.url)
                         self.url = r.url
         except requests.ConnectionError as exc:
@@ -81,6 +83,7 @@ class ExtractEmails:
               .format(len(self.scanned), len(self.emails)))
 
     def get_emails(self, page):
+        # print(page)
         emails = re.findall(r'\b[\w.-]+?@\w+?\.(?!jpg|png|jpeg)\w+?\b', page)
         emails = [x.lower() for x in emails]
         emails = [x for x in emails if '.' + x.split('.')[-1] in TOP_LEVEL_DOMAINS]
@@ -127,4 +130,3 @@ if __name__ == '__main__':
 
 # www.loftmarietta.com
 
-# www.choicehotels.com ene code -d ajillaj bga atlaa postgres deer ajillahgui bgaa

@@ -31,11 +31,10 @@ if __name__ == '__main__':
         #     """
         query = """
 select 
-	id, project_id_original 
-from grant_crawled_new_important1
-where 
-	award_amount  is null
-	and id between 87730 and 100037
+    id, project_id_original 
+from grant_crawled_new_missing
+where id between 177 and 24358
+    and award_amount is null
 ;
             """
         cursor.execute(query)
@@ -61,14 +60,14 @@ where
                         emails =[]
                     if emails != []:
                         emailstr = convertTuple(emails)
-                        ins_query = "update grant_crawled_new_important1 set researcher_en = '{}', award_amount = '2' where id = {}".format(emailstr, id)
+                        ins_query = "update grant_crawled_new_missing set researcher_en = '{}', award_amount = '2' where id = {}".format(emailstr, id)
                         cursor1.execute(ins_query)
                     else:
-                        ins_query = "update grant_crawled_new_important1 set award_amount = '2' where id = {}".format(id)
+                        ins_query = "update grant_crawled_new_missing set award_amount = '2' where id = {}".format(id)
                         cursor1.execute(ins_query)
                     conn.commit()
                 else:
-                    ins_query = "update grant_crawled_new_important1 set award_amount = '2' where id = {}".format(id)
+                    ins_query = "update grant_crawled_new_missing set award_amount = '2' where id = {}".format(id)
                     cursor1.execute(ins_query)
                     conn.commit()
         cursor.close()
